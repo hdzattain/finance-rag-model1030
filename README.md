@@ -11,6 +11,7 @@ Features
 	•	CTA Strategy Backtesting: Implements a simple moving average crossover strategy using the Backtrader framework.
 	•	API Endpoints: Includes a RESTful API for querying recommendations and triggering backtests.
  Project Structure
+ 
  ├── data/                   # Folder containing financial data files
 ├── models/                 # Folder for storing pre-trained or fine-tuned models
 ├── scripts/
