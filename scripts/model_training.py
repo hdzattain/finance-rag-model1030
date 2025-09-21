@@ -1,11 +1,24 @@
-from transformers import RagTokenizer, RagRetriever, RagSequenceForGeneration
+"""Utility script to bootstrap the layered quant research stack."""
+from __future__ import annotations
 
-# 初始化模型和检索器
-tokenizer = RagTokenizer.from_pretrained("facebook/rag-sequence-nq")
-retriever = RagRetriever.from_pretrained("facebook/rag-sequence-nq", index_name="custom")
-model = RagSequenceForGeneration.from_pretrained("facebook/rag-sequence-nq", retriever=retriever)
+from quant_platform import (
+    ArchitectureOptimiser,
+    HardwareAdapter,
+    PlatformConfig,
+    ResearchCoordinator,
+)
 
-def generate_recommendation(query):
-    inputs = tokenizer(query, return_tensors="pt")
-    output = model.generate(**inputs)
-    return tokenizer.batch_decode(output, skip_special_tokens=True)
+
+def main() -> None:
+    config = PlatformConfig()
+    hardware = HardwareAdapter(config.hardware)
+    optimiser = ArchitectureOptimiser(frameworks=["FastAPI", "Prefect", "Ray"])
+    research = ResearchCoordinator()
+
+    print("Hardware profile:", hardware.summary())
+    print("Architecture reflection:", optimiser.run_reflection(["高频回测", "多模态研究"]).__dict__)
+    print("Research preview:", research.run_auto_research("Chan theory"))
+
+
+if __name__ == "__main__":
+    main()
