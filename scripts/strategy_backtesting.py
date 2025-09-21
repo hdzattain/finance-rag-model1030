@@ -1,22 +1,25 @@
-import backtrader as bt
+"""CLI utility demonstrating the Chan-lun backtest manager."""
+from __future__ import annotations
 
-class MovingAverageStrategy(bt.Strategy):
-    def __init__(self):
-        self.sma1 = bt.ind.SMA(period=10)
-        self.sma2 = bt.ind.SMA(period=20)
+import pandas as pd
 
-    def next(self):
-        if self.sma1 > self.sma2:
-            self.buy()
-        elif self.sma1 < self.sma2:
-            self.sell()
+from quant_platform import PlatformConfig
+from quant_platform.backtesting import QuantBacktestManager
 
-def run_backtest():
-    cerebro = bt.Cerebro()
-    data = bt.feeds.YahooFinanceCSVData(dataname="data/AAPL.csv")
-    cerebro.adddata(data)
-    cerebro.addstrategy(MovingAverageStrategy)
-    cerebro.run()
-    cerebro.plot()
 
-run_backtest()
+def load_sample_data() -> pd.DataFrame:
+    dates = pd.date_range("2024-01-01", periods=60, freq="D")
+    prices = pd.Series(range(60), index=dates).rolling(3).mean().fillna(method="bfill") + 100
+    return pd.DataFrame({"close": prices}, index=dates)
+
+
+def main() -> None:
+    config = PlatformConfig()
+    manager = QuantBacktestManager(platform_config=config.backtest)
+    data = load_sample_data()
+    report = manager.backtest_local(data)
+    print("Backtest report:", report)
+
+
+if __name__ == "__main__":
+    main()
